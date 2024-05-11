@@ -28,6 +28,7 @@
   "homepage": "https://github.com/pesca-dev/atomicity#readme",
   "devDependencies": {
     "@eslint/js": "^9.2.0",
+    "@types/react": "^18.3.2",
     "eslint": "^8.57.0",
     "globals": "^15.2.0",
     "typescript": "^5.4.5",

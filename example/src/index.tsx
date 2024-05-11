@@ -1,7 +1,9 @@
-import Atomicity, {
+import {
   AbstractElement,
   ObservedAttributes,
   Transformers,
+  atomicity,
+  atom,
 } from "atomicity";
 
 type Attributes = {
@@ -15,11 +17,15 @@ const transformers: Transformers<Attributes> = {
 };
 
 class Test extends AbstractElement<Attributes> {
+  #counter = atom(0);
+
   constructor() {
     super(transformers);
-
-    console.log(this.attrs);
   }
+
+  #handleClick = () => {
+    this.#counter.set(this.#counter() + 1);
+  };
 
   static get observedAttributes(): ObservedAttributes<Attributes> {
     return ["name", "age"];
@@ -28,10 +34,10 @@ class Test extends AbstractElement<Attributes> {
   render() {
     return (
       <div>
-        {this.attrs.age}
-        <span>
-          {this.attrs.name} {this.attrs.age}
-        </span>
+        <button onClick={() => this.#handleClick()} id="test">
+          Click Me
+        </button>
+        {this.#counter}
       </div>
     );
   }

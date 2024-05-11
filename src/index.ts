@@ -1,130 +1,52 @@
-type Signal = () => unknown;
-
-let runningSignal: Signal | undefined = undefined;
-
-function createAtoms<T extends { [key: string]: unknown }>(values: T): unknown {
-  const atoms = {};
-
-  Object.entries(values).forEach(([key, val]) => {
-    const signals = new Set<Signal>();
-
-    const getter = () => {
-      if (runningSignal) {
-        signals.add(runningSignal);
-      }
-      return val;
-    };
-
-    Object.defineProperty(atoms, key, {
-      get: () => {
-        return getter;
-      },
-      set: (newVal: unknown) => {
-        val = newVal;
-        signals.forEach((sig) => runSignal(sig));
-      },
-    });
-  });
-
-  return atoms;
-}
-
-function createSignal(sig: Signal): void {
-  runSignal(sig);
-}
-
-function runSignal(sig: Signal): void {
-  const temp = runningSignal;
-  runningSignal = sig;
-  sig();
-  runningSignal = temp;
-}
-
-export type Transformers<Attributes extends object> = {
-  [key in keyof Attributes]: [
-    (arg: string) => Attributes[key],
-    Attributes[key],
-  ];
-};
-
-export type ObservedAttributes<Attributes> = (keyof Attributes)[];
-
-export abstract class AbstractElement<
-  Attributes extends Record<string, unknown>,
-> extends HTMLElement {
-  #transformers: Transformers<Attributes>;
-
-  #root: ShadowRoot;
-
-  #attrs: Attributes;
-
-  constructor(transformers: Transformers<Attributes>) {
-    super();
-
-    this.#transformers = transformers;
-
-    this.#root = this.attachShadow({ mode: "open" });
-
-    const defaults = Object.entries(transformers).reduce<Attributes>(
-      (memo, [prop, value]) => {
-        memo[prop as keyof Attributes] = (
-          value as unknown[]
-        )[1] as Attributes[typeof prop];
-        return memo;
-      },
-      {} as Attributes,
-    );
-
-    this.#attrs = createAtoms(defaults) as Attributes;
-  }
-
-  protected get attrs(): Attributes {
-    return this.#attrs;
-  }
-
-  connectedCallback(): void {
-    this.#root.replaceChildren(this.render() as string | Node);
-  }
-
-  attributeChangedCallback(
-    key: keyof Attributes,
-    oldValue: string,
-    newValue: string,
-  ) {
-    if (oldValue != newValue) {
-      this.attrs[key] = this.#transformers[key][0](newValue);
-    }
-  }
-
-  abstract render(): unknown;
-}
+import { Signal, createSignal } from "./signals";
 
 export function createElement(
   tag: string,
-  _: unknown,
+  properties: Record<string, string>,
   ...children: (Signal | HTMLElement | unknown)[]
 ) {
   const elem = document.createElement(tag);
 
-  createSignal(() => {
-    console.log(`signal for ${tag}`);
-    elem.innerHTML = "";
-    for (const child of children) {
-      if (typeof child === "function") {
-        elem.innerHTML += child();
+  for (const child of children) {
+    if (typeof child === "function") {
+      // we have a signal
+      const text = document.createTextNode("");
+      createSignal(() => {
+        text.textContent = `${child()}`;
+      });
+      elem.appendChild(text);
+    } else if (child instanceof HTMLElement) {
+      // just a regular node
+      elem.appendChild(child);
+    } else {
+      // we dont really know what this is
+      elem.innerHTML += child;
+    }
+  }
+
+  Object.entries(properties ?? {}).forEach(([key, value]) => {
+    if (key.startsWith("on")) {
+      // we have an event listener
+      if (typeof value === "function") {
+        elem.addEventListener(key.toLowerCase().slice(2), value);
       } else {
-        if ((child as unknown) instanceof HTMLElement) {
-          elem.appendChild(child as Node);
-        } else {
-          elem.innerHTML += child;
-        }
+        console.warn("trying to add an event listener which is not a function");
       }
+    } else if (typeof value === "string") {
+      // we have a regular text attribute
+      elem.setAttribute(key, value);
+    } else if (typeof value === "function") {
+      // we have a signal again
+      createSignal(() => {
+        elem.setAttribute(key, `${(value as () => unknown)()}`);
+      });
     }
   });
 
   return elem;
 }
 
-export default {
-  createElement,
-};
+export * from "./abstractElement";
+export * from "./signals";
+
+export { createElement as atomicity };
