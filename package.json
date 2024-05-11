@@ -1,5 +1,5 @@
 {
-  "name": "decoratory",
+  "name": "atomicity",
   "version": "0.0.1",
   "description": "Lightweight library for creating fast WebComponents.",
   "main": "build/index.js",
@@ -10,11 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pesca-dev/decoratory"
+    "url": "https://github.com/pesca-dev/atomicity"
   },
   "keywords": [
-    "webcomponents",
-    "decorators"
+    "webcomponents"
   ],
   "author": {
     "name": "H1ghBre4k3r",
@@ -23,9 +22,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pesca-dev/decoratory/issues"
+    "url": "https://github.com/pesca-dev/atomicity/issues"
   },
-  "homepage": "https://github.com/pesca-dev/decoratory#readme",
+  "homepage": "https://github.com/pesca-dev/atomicity#readme",
   "devDependencies": {
     "typescript": "^5.4.5"
   }
