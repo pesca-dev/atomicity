@@ -1,0 +1,32 @@
+{
+  "name": "decoratory",
+  "version": "0.0.1",
+  "description": "Lightweight library for creating fast WebComponents.",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node .",
+    "build:start": "npm run build && npm run start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pesca-dev/decoratory"
+  },
+  "keywords": [
+    "webcomponents",
+    "decorators"
+  ],
+  "author": {
+    "name": "H1ghBre4k3r",
+    "email": "h1ghbre4k3r@dev.bre4k3r.de",
+    "url": "https://github.com/H1ghBre4k3r"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pesca-dev/decoratory/issues"
+  },
+  "homepage": "https://github.com/pesca-dev/decoratory#readme",
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
