@@ -1,8 +1,8 @@
-type Signal = () => any;
+type Signal = () => unknown;
 
 let runningSignal: Signal | undefined = undefined;
 
-function createAtoms<T extends { [key: string]: any }>(values: T): any {
+function createAtoms<T extends { [key: string]: unknown }>(values: T): unknown {
   const atoms = {};
 
   Object.entries(values).forEach(([key, val]) => {
@@ -19,7 +19,7 @@ function createAtoms<T extends { [key: string]: any }>(values: T): any {
       get: () => {
         return getter;
       },
-      set: (newVal: any) => {
+      set: (newVal: unknown) => {
         val = newVal;
         signals.forEach((sig) => runSignal(sig));
       },
@@ -40,7 +40,7 @@ function runSignal(sig: Signal): void {
   runningSignal = temp;
 }
 
-export type Transformers<Attributes extends {}> = {
+export type Transformers<Attributes extends object> = {
   [key in keyof Attributes]: [
     (arg: string) => Attributes[key],
     Attributes[key],
@@ -50,7 +50,7 @@ export type Transformers<Attributes extends {}> = {
 export type ObservedAttributes<Attributes> = (keyof Attributes)[];
 
 export abstract class AbstractElement<
-  Attributes extends {},
+  Attributes extends Record<string, unknown>,
 > extends HTMLElement {
   #transformers: Transformers<Attributes>;
 
@@ -67,13 +67,15 @@ export abstract class AbstractElement<
 
     const defaults = Object.entries(transformers).reduce<Attributes>(
       (memo, [prop, value]) => {
-        memo[prop as keyof Attributes] = (value as any)[1] as any;
+        memo[prop as keyof Attributes] = (
+          value as unknown[]
+        )[1] as Attributes[typeof prop];
         return memo;
       },
       {} as Attributes,
     );
 
-    this.#attrs = createAtoms(defaults);
+    this.#attrs = createAtoms(defaults) as Attributes;
   }
 
   protected get attrs(): Attributes {
@@ -81,7 +83,7 @@ export abstract class AbstractElement<
   }
 
   connectedCallback(): void {
-    this.#root.replaceChildren(this.render());
+    this.#root.replaceChildren(this.render() as string | Node);
   }
 
   attributeChangedCallback(
@@ -94,13 +96,13 @@ export abstract class AbstractElement<
     }
   }
 
-  abstract render(): any;
+  abstract render(): unknown;
 }
 
 export function createElement(
   tag: string,
-  _: any,
-  ...children: (() => any | HTMLElement | any)[]
+  _: unknown,
+  ...children: (Signal | HTMLElement | unknown)[]
 ) {
   const elem = document.createElement(tag);
 
@@ -111,8 +113,8 @@ export function createElement(
       if (typeof child === "function") {
         elem.innerHTML += child();
       } else {
-        if ((child as any) instanceof HTMLElement) {
-          elem.appendChild(child);
+        if ((child as unknown) instanceof HTMLElement) {
+          elem.appendChild(child as Node);
         } else {
           elem.innerHTML += child;
         }
