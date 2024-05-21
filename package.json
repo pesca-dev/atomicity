@@ -1,5 +1,5 @@
 {
-    "name": "atomicity",
+    "name": "@pesca-dev/atomicity",
     "version": "0.1.0",
     "description": "Lightweight library for creating fast WebComponents.",
     "main": "dist/index.js",
