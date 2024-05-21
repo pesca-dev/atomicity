@@ -2,33 +2,20 @@ export type Signal = () => unknown;
 
 let runningSignal: Signal | undefined = undefined;
 
+export type Atoms<T extends { [key: string]: unknown }> = {
+    [key in keyof T]: Atom<T[key]>;
+};
+
 export function createAtoms<T extends { [key: string]: unknown }>(
     values: T,
-): unknown {
-    const atoms = {};
+): Atoms<T> {
+    const atoms: { [key: string]: Atom } = {};
 
     Object.entries(values).forEach(([key, val]) => {
-        const signals = new Set<Signal>();
-
-        const getter = () => {
-            if (runningSignal) {
-                signals.add(runningSignal);
-            }
-            return val;
-        };
-
-        Object.defineProperty(atoms, key, {
-            get: () => {
-                return getter;
-            },
-            set: (newVal: unknown) => {
-                val = newVal;
-                signals.forEach((sig) => runSignal(sig));
-            },
-        });
+        atoms[key] = atom(val);
     });
 
-    return atoms;
+    return atoms as Atoms<T>;
 }
 
 export interface Atom<Value = unknown> {

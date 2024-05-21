@@ -1,4 +1,4 @@
-import { createAtoms } from "./signals";
+import { Atoms, createAtoms } from "./signals";
 
 export type Transformers<Attributes extends object> = {
     [key in keyof Attributes]: [
@@ -15,7 +15,7 @@ export abstract class AbstractElement<
     #transformers: Transformers<Attributes>;
 
     #root: ShadowRoot;
-    #attrs: Attributes;
+    #attrs: Atoms<Attributes>;
 
     constructor(transformers: Transformers<Attributes>) {
         super();
@@ -34,10 +34,10 @@ export abstract class AbstractElement<
             {} as Attributes,
         );
 
-        this.#attrs = createAtoms(defaults) as Attributes;
+        this.#attrs = createAtoms(defaults);
     }
 
-    protected get attrs(): Attributes {
+    protected get attrs(): Atoms<Attributes> {
         return this.#attrs;
     }
 
@@ -51,7 +51,7 @@ export abstract class AbstractElement<
         newValue: string,
     ) {
         if (oldValue != newValue) {
-            this.attrs[key] = this.#transformers[key][0](newValue);
+            this.attrs[key].set(this.#transformers[key][0](newValue));
         }
     }
 

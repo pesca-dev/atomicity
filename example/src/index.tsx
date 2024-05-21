@@ -10,13 +10,11 @@ import {
 type Attributes = {
     name: string;
     age: number;
-    "show-button": boolean;
 };
 
 const transformers: Transformers<Attributes> = {
     name: [(arg) => arg, ""],
     age: [(arg) => parseInt(arg, 10), 0],
-    "show-button": [(arg) => arg !== "false", false],
 };
 
 class Test extends AbstractElement<Attributes> {
@@ -47,6 +45,7 @@ class Test extends AbstractElement<Attributes> {
     render() {
         return (
             <div id={this.#id}>
+                <h2>Hello {this.attrs.name}</h2>
                 <button onClick={() => this.#handleClick()} id="test">
                     Click Me
                 </button>
