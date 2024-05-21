@@ -1,5 +1,9 @@
+import { Atom } from "./signals";
+
 // eslint-disable-next-line @typescript-eslint/ban-types
-type IsNotFunction<T> = T extends Function ? never : T;
+type Value<V> = V extends Function ? never : ValidValues<V>;
+
+type ValidValues<V> = V | (() => V) | Atom<V>;
 
 type EventKeys = `on${Capitalize<keyof HTMLElementEventMap>}`;
 
@@ -18,7 +22,7 @@ declare global {
                 [k in Exclude<
                     keyof HTMLElementTagNameMap[K],
                     `on${keyof HTMLElementEventMap}`
-                >]?: IsNotFunction<HTMLElementTagNameMap[K][k]>;
+                >]?: Value<HTMLElementTagNameMap[K][k]>;
             } & {
                 [key in EventKeys]?: (ev: Event) => unknown;
             };

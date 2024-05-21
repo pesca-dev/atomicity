@@ -36,13 +36,17 @@ class Test extends AbstractElement<Attributes> {
             .map((_, i) => <li>List Entry: {i}</li>);
     };
 
+    #id = () => {
+        return `${this.#counter()}`;
+    };
+
     static get observedAttributes(): ObservedAttributes<Attributes> {
         return ["name", "age"];
     }
 
     render() {
         return (
-            <div>
+            <div id={this.#id}>
                 <button onClick={() => this.#handleClick()} id="test">
                     Click Me
                 </button>
