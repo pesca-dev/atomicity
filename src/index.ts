@@ -1,3 +1,8 @@
+// eslint-disable-next-line @typescript-eslint/ban-types
+type IsNotFunction<T> = T extends Function ? never : T;
+
+type EventKeys = `on${Capitalize<keyof HTMLElementEventMap>}`;
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   export namespace JSX {
@@ -10,7 +15,12 @@ declare global {
     // The following are custom types, not part of TS's known JSX namespace:
     type IntrinsicElementMap = {
       [K in keyof HTMLElementTagNameMap]: {
-        [k: string]: unknown;
+        [k in Exclude<
+          keyof HTMLElementTagNameMap[K],
+          `on${keyof HTMLElementEventMap}`
+        >]?: IsNotFunction<HTMLElementTagNameMap[K][k]>;
+      } & {
+        [key in EventKeys]?: (ev: Event) => unknown;
       };
     };
 
