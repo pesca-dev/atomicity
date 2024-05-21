@@ -24,7 +24,9 @@ CONTRIBUTING.md
 src
 webpack.*
 *.map
+eslint.*
 
 jest.*
 
 example
+Justfile

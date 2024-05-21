@@ -2,18 +2,20 @@ import {
   AbstractElement,
   ObservedAttributes,
   Transformers,
-  atomicity,
+  a,
   atom,
 } from "atomicity";
 
 type Attributes = {
   name: string;
   age: number;
+  "show-button": boolean;
 };
 
 const transformers: Transformers<Attributes> = {
   name: [(arg) => arg, ""],
   age: [(arg) => parseInt(arg, 10), 0],
+  "show-button": [(arg) => arg !== "false", false],
 };
 
 class Test extends AbstractElement<Attributes> {

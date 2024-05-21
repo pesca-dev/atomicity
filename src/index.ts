@@ -49,4 +49,4 @@ export function createElement(
 export * from "./abstractElement";
 export * from "./signals";
 
-export { createElement as atomicity };
+export { createElement as a };
