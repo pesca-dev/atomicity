@@ -2,8 +2,8 @@ import {
   AbstractElement,
   ObservedAttributes,
   Transformers,
-  a,
   atom,
+  a,
 } from "atomicity";
 
 type Attributes = {

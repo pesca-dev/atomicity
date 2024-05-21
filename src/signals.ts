@@ -1,5 +1,3 @@
-import { ReactElement } from "react";
-
 export type Signal = () => unknown;
 
 let runningSignal: Signal | undefined = undefined;
@@ -33,7 +31,7 @@ export function createAtoms<T extends { [key: string]: unknown }>(
   return atoms;
 }
 
-export interface Atom<Value = unknown> extends ReactElement<never, never> {
+export interface Atom<Value = unknown> {
   (): Value;
   set(newValue: Value): void;
   get(): Value;

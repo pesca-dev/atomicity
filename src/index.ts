@@ -1,52 +1,25 @@
-import { Signal, createSignal } from "./signals";
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  export namespace JSX {
+    // The return type of our JSX Factory: this could be anything
+    export type Element = HTMLElement;
 
-export function createElement(
-  tag: string,
-  properties: Record<string, string>,
-  ...children: (Signal | HTMLElement | unknown)[]
-) {
-  const elem = document.createElement(tag);
+    // IntrinsicElementMap grabs all the standard HTML tags in the TS DOM lib.
+    export interface IntrinsicElements extends IntrinsicElementMap {}
 
-  for (const child of children) {
-    if (typeof child === "function") {
-      // we have a signal
-      const text = document.createTextNode("");
-      createSignal(() => {
-        text.textContent = `${child()}`;
-      });
-      elem.appendChild(text);
-    } else if (child instanceof HTMLElement) {
-      // just a regular node
-      elem.appendChild(child);
-    } else {
-      // we dont really know what this is
-      elem.innerHTML += child;
+    // The following are custom types, not part of TS's known JSX namespace:
+    type IntrinsicElementMap = {
+      [K in keyof HTMLElementTagNameMap]: {
+        [k: string]: unknown;
+      };
+    };
+
+    export interface Component {
+      (properties?: { [key: string]: unknown }, children?: Node[]): Node;
     }
   }
-
-  Object.entries(properties ?? {}).forEach(([key, value]) => {
-    if (key.startsWith("on")) {
-      // we have an event listener
-      if (typeof value === "function") {
-        elem.addEventListener(key.toLowerCase().slice(2), value);
-      } else {
-        console.warn("trying to add an event listener which is not a function");
-      }
-    } else if (typeof value === "string") {
-      // we have a regular text attribute
-      elem.setAttribute(key, value);
-    } else if (typeof value === "function") {
-      // we have a signal again
-      createSignal(() => {
-        elem.setAttribute(key, `${(value as () => unknown)()}`);
-      });
-    }
-  });
-
-  return elem;
 }
 
+export { createElement as a } from "./createElement";
 export * from "./abstractElement";
 export * from "./signals";
-
-export { createElement as a };
