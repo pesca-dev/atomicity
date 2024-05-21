@@ -27,6 +27,7 @@ webpack.*
 eslint.*
 
 jest.*
+vite.*
 
 example
 Justfile
