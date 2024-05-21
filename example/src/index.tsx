@@ -45,6 +45,7 @@ class Test extends AbstractElement<Attributes> {
     render() {
         return (
             <div id={this.#id}>
+                <my-foo age={42}></my-foo>
                 <h2>Hello {this.attrs.name}</h2>
                 <button onClick={() => this.#handleClick()} id="test">
                     Click Me
