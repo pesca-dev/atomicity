@@ -28,6 +28,7 @@ eslint.*
 
 jest.*
 vite.*
+jsr.json
 
 example
 Justfile
