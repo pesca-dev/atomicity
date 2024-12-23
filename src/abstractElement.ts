@@ -14,15 +14,12 @@ export abstract class AbstractElement<
 > extends HTMLElement {
     #transformers: Transformers<Attributes>;
 
-    #root: ShadowRoot;
     #attrs: Atoms<Attributes>;
 
     constructor(transformers: Transformers<Attributes>) {
         super();
 
         this.#transformers = transformers;
-
-        this.#root = this.attachShadow({ mode: "open" });
 
         const defaults = Object.entries(transformers).reduce<Attributes>(
             (memo, [prop, value]) => {
@@ -42,7 +39,7 @@ export abstract class AbstractElement<
     }
 
     connectedCallback(): void {
-        this.#root.replaceChildren(this.render() as string | Node);
+        this.replaceChildren(this.render() as string | Node);
     }
 
     attributeChangedCallback(
