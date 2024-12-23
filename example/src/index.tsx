@@ -21,7 +21,7 @@ class Test extends AbstractElement<Attributes> {
     #counter = atom(0);
 
     constructor() {
-        super(transformers);
+        super(transformers, false);
     }
 
     #handleClick = () => {

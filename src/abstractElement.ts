@@ -16,10 +16,16 @@ export abstract class AbstractElement<
 
     #attrs: Atoms<Attributes>;
 
-    constructor(transformers: Transformers<Attributes>) {
+    #root?: ShadowRoot | null;
+
+    constructor(transformers: Transformers<Attributes>, useShadow = false) {
         super();
 
         this.#transformers = transformers;
+
+        if (useShadow) {
+            this.#root = this.attachShadow({ mode: "open" });
+        }
 
         const defaults = Object.entries(transformers).reduce<Attributes>(
             (memo, [prop, value]) => {
@@ -36,6 +42,14 @@ export abstract class AbstractElement<
 
     protected get attrs(): Atoms<Attributes> {
         return this.#attrs;
+    }
+
+    replaceChildren(...nodes: (string | Node)[]): void {
+        if (this.#root) {
+            this.#root.replaceChildren(...nodes);
+        } else {
+            super.replaceChildren(...nodes);
+        }
     }
 
     connectedCallback(): void {
