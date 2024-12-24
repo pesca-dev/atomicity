@@ -10,15 +10,15 @@ export type Transformers<Attributes extends object> = {
 export type ObservedAttributes<Attributes> = (keyof Attributes)[];
 
 export abstract class AbstractElement<
-    Attributes extends Record<string, unknown>,
+    Attributes extends Record<string, unknown> = never,
 > extends HTMLElement {
-    #transformers: Transformers<Attributes>;
+    #transformers?: Transformers<Attributes>;
 
     #attrs: Atoms<Attributes>;
 
     #root?: ShadowRoot | null;
 
-    constructor(transformers: Transformers<Attributes>, useShadow = false) {
+    constructor(transformers?: Transformers<Attributes>, useShadow = false) {
         super();
 
         this.#transformers = transformers;
@@ -27,7 +27,7 @@ export abstract class AbstractElement<
             this.#root = this.attachShadow({ mode: "open" });
         }
 
-        const defaults = Object.entries(transformers).reduce<Attributes>(
+        const defaults = Object.entries(transformers ?? {}).reduce<Attributes>(
             (memo, [prop, value]) => {
                 memo[prop as keyof Attributes] = (
                     value as unknown[]
@@ -61,7 +61,7 @@ export abstract class AbstractElement<
         oldValue: string,
         newValue: string,
     ) {
-        if (oldValue != newValue) {
+        if (oldValue != newValue && this.#transformers?.[key]) {
             this.attrs[key].set(this.#transformers[key][0](newValue));
         }
     }
