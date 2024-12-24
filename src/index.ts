@@ -21,7 +21,7 @@ declare global {
             [K in keyof HTMLElementTagNameMap]: {
                 [k in Exclude<
                     keyof HTMLElementTagNameMap[K],
-                    `on${keyof HTMLElementEventMap}`
+                    `on${keyof HTMLElementEventMap}` | "toString"
                 >]?: Value<HTMLElementTagNameMap[K][k]>;
             } & {
                 [key in EventKeys]?: (ev: Event) => unknown;
