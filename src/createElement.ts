@@ -68,7 +68,10 @@ export function createElement(
                     anchorSetter?.(children[0]);
                 }
             });
-        } else if (child instanceof HTMLElement) {
+        } else if (
+            child instanceof HTMLElement ||
+            child instanceof SVGSVGElement
+        ) {
             // just a regular node
             elem.appendChild(child);
             setAnchor?.(child);
