@@ -93,6 +93,8 @@ export function createElement(
                     "trying to add an event listener which is not a function",
                 );
             }
+        } else if (key.toLowerCase() == "classname") {
+            elem.setAttribute("class", value);
         } else if (typeof value === "string") {
             // we have a regular text attribute
             elem.setAttribute(key, value);
