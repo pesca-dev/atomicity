@@ -95,14 +95,14 @@ export function createElement(
             }
         } else if (key.toLowerCase() == "classname") {
             elem.setAttribute("class", value);
-        } else if (typeof value === "string") {
-            // we have a regular text attribute
-            elem.setAttribute(key, value);
         } else if (typeof value === "function") {
             // we have a signal again
             createSignal(() => {
                 elem.setAttribute(key, `${(value as () => unknown)()}`);
             });
+        } else {
+            // we have a regular attribute
+            elem.setAttribute(key, `${value}`);
         }
     });
 
