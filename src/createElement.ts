@@ -84,6 +84,10 @@ export function createElement(
     }
 
     Object.entries(properties ?? {}).forEach(([key, value]) => {
+        if (key.toLowerCase() == "classname") {
+            key = "class"
+        }
+
         if (key.startsWith("on")) {
             // we have an event listener
             if (typeof value === "function") {
@@ -93,8 +97,6 @@ export function createElement(
                     "trying to add an event listener which is not a function",
                 );
             }
-        } else if (key.toLowerCase() == "classname") {
-            elem.setAttribute("class", value);
         } else if (typeof value === "function") {
             // we have a signal again
             createSignal(() => {
